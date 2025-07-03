@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  health-orchestrator:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"  # Map port 8000 of the container to port 8000 on the host
+    volumes:
+      - .:/app  # Mount the current directory to /app in the container for live updates
+    environment:
+      - ENV_VAR_NAME=value  # Add any environment variables needed for your application

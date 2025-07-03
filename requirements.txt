@@ -1,0 +1,6 @@
+flask
+prometheus_client
+numpy
+requests
+joblib
+scikit-learn
