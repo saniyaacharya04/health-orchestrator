@@ -1,5 +1,0 @@
-prometheus_client
-numpy
-requests
-scikit-learn
-flask
