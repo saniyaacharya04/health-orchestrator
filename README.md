@@ -1,4 +1,5 @@
-# Health Orchestrator
+# Health Orchestrator [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 
 Health Orchestrator is a Kubernetes-deployable Python application designed to monitor and manage health metrics of services, with automated healing and alerting mechanisms. It includes a Helm chart for easy deployment and management on any Kubernetes cluster.
 
