@@ -1,141 +1,148 @@
+# Health Orchestrator
 
-# Container and Microservices Health Orchestrator
+Health Orchestrator is a Kubernetes-deployable Python application designed to monitor and manage health metrics of services, with automated healing and alerting mechanisms. It includes a Helm chart for easy deployment and management on any Kubernetes cluster.
 
-This project monitors containerized microservices using Prometheus-style metrics, detects failures, makes healing decisions using a machine learning model, and triggers healing actions automatically.
+---
 
 ## Features
 
-- Health metrics collection (CPU, memory, error rate)
-- Failure detection logic
-- ML-based healing decision engine
-- Automated orchestration actions (e.g., restart)
-- Prometheus `/metrics` endpoint
-- Flask-based API with live status
-- Deployable via Docker and Kubernetes
+- Monitor service health using custom metrics.
+- Automatic healing based on health thresholds.
+- Exposes Prometheus-compatible metrics for monitoring.
+- Configurable via Helm values for flexible deployments.
+- Includes readiness and liveness probes for Kubernetes.
 
 ---
 
 ## Project Structure
 
 ```
+
 health-orchestrator/
-│
-├── Dockerfile
-├── deployment.yaml
-├── service.yaml
-├── app.py                         # Main Flask + Orchestration runner
-│
-├── health_monitor/
-│   └── health_monitor.py         # Simulated health metrics generator
-│
-├── failure_detection/
-│   └── failure_detection.py      # Detects failures based on metrics
-│
-├── healing_decision_engine/
-│   ├── healing_decision_engine.py # Predicts healing actions
-│   └── model.pkl                  # Pre-trained ML model
-│
-├── orchestration/
-│   └── orchestration.py          # Executes healing actions
-└── requirements.txt
-```
+├── app/                        # Main application code
+├── docker/                     # Dockerfiles and docker-compose
+├── helm-health-orchestrator/   # Helm chart for deployment
+├── monitors/                   # Health monitoring and failure detection
+├── healing/                    # Healing and decision engine modules
+├── orchestrator/               # Actions and orchestration logic
+├── deployment/                 # Kubernetes deployment/service templates
+└── README.md
+
+````
 
 ---
 
-## Docker Build
+## Helm Chart Usage
 
-Make sure Minikube uses the local Docker daemon:
+The Helm chart simplifies deployment on Kubernetes.  
+
+### Install the Chart
 
 ```bash
-eval $(minikube docker-env)
-docker build -t health-orchestrator:latest .
-```
+# Switch to your Kubernetes context (optional)
+kubectl config use-context docker-desktop
 
----
+# Install Helm chart
+helm install health-orchestrator ./helm-health-orchestrator
+````
 
-## Kubernetes Deployment
-
-```bash
-kubectl apply -f deployment.yaml
-kubectl apply -f service.yaml
-```
-
-Check pod status:
+### Verify Deployment
 
 ```bash
-kubectl get pods -w
+kubectl get pods
+kubectl get svc health-orchestrator-helm-health-orchestrator
 ```
 
-Check service and open in browser:
+### Access the Application
 
 ```bash
-minikube service health-orchestrator-service
+export NODE_PORT=$(kubectl get svc health-orchestrator-helm-health-orchestrator -o jsonpath="{.spec.ports[0].nodePort}")
+export NODE_IP=$(kubectl get nodes -o jsonpath="{.items[0].status.addresses[0].address}")
+echo http://$NODE_IP:$NODE_PORT
 ```
 
 ---
 
-## Endpoints
+## Configuration
 
-* `GET /` — Orchestrator status
-* `GET /metrics` — Prometheus-compatible metrics
+Edit the `helm-health-orchestrator/values.yaml` to customize:
 
----
+```yaml
+replicaCount: 1
 
-## Model (ML)
+image:
+  repository: health-orchestrator
+  tag: latest
+  pullPolicy: IfNotPresent
 
-* `healing_decision_engine/model.pkl`: Pre-trained model to decide between `"RESTART"` or `"NO_ACTION"` based on:
+service:
+  type: NodePort
+  ports:
+    api: 5000
+    metrics: 8000
+    nodePortAPI: 30001
+    nodePortMetrics: 30002
 
-  * CPU usage
-  * Memory usage
-  * Error rate
+readinessProbe:
+  path: /metrics
+  port: metrics
+  initialDelaySeconds: 5
+  periodSeconds: 10
 
----
+livenessProbe:
+  path: /metrics
+  port: metrics
+  initialDelaySeconds: 15
+  periodSeconds: 20
 
-## Local Development (Optional)
+serviceAccount:
+  create: true
+  name: ""
 
-Run orchestrator:
+ingress:
+  enabled: false
 
-```bash
-python app.py
+httpRoute:
+  enabled: false
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUUtilizationPercentage: 80
 ```
 
-Run simulated health monitor:
+---
 
-```bash
-python health_monitor/health_monitor.py
+## Metrics
+
+Exposes Prometheus metrics at:
+
+```
+/metrics
+```
+
+Example metrics:
+
+```
+python_gc_objects_collected_total
+python_gc_collections_total
+process_cpu_seconds_total
+process_resident_memory_bytes
+...
 ```
 
 ---
 
-## Dependencies
+## Contributing
 
-```bash
-pip install -r requirements.txt
-```
-
-Common dependencies include:
-
-* Flask
-* prometheus_client
-* joblib
-* numpy
+1. Fork the repository.
+2. Create a feature branch.
+3. Make changes and commit.
+4. Push your branch and open a Pull Request.
 
 ---
 
-## Observability
+## License
 
-Use Prometheus to scrape `/metrics` for alerts and dashboards.
-
----
-
-## Future Improvements
-
-* Add authentication to APIs
-* Replace mock data with real metrics collectors (e.g., Node Exporter)
-* Support container auto-scaling
-* Grafana integration
-
----
-
-
----
+MIT License © 2025 Saniya Acharya
