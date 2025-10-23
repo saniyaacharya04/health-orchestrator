@@ -1,12 +1,14 @@
 import unittest
-from failure_detection.failure_detection import detect_failures
+from monitors.failure_detector import detect_failure
 
-class TestFailureDetection(unittest.TestCase):
-    def test_detect_failures(self):
-        metrics = [0.9, 0.2, 0.5, 0.1, 0.8]  # Example metrics
-        failures = detect_failures(metrics)
-        self.assertIn(1, failures)  # Index 1 should be detected as a failure
-        self.assertIn(3, failures)  # Index 3 should also be detected as a failure
+class TestFailureDetector(unittest.TestCase):
+    def test_detect_failure_true(self):
+        metrics = {"cpu": 90, "memory": 90, "error_rate": 10}
+        self.assertTrue(detect_failure(metrics, 80, 80, 5))
 
-if __name__ == '__main__':
+    def test_detect_failure_false(self):
+        metrics = {"cpu": 50, "memory": 50, "error_rate": 0}
+        self.assertFalse(detect_failure(metrics, 80, 80, 5))
+
+if __name__ == "__main__":
     unittest.main()

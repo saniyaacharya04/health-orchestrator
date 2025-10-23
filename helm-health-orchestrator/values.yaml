@@ -1,0 +1,37 @@
+replicaCount: 1
+
+image:
+  repository: health-orchestrator
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  type: NodePort
+  ports:
+    api: 5000
+    metrics: 8000
+    nodePortAPI: 30001
+    nodePortMetrics: 30002
+
+readinessProbe:
+  path: /metrics
+  initialDelaySeconds: 5
+  periodSeconds: 10
+
+livenessProbe:
+  path: /metrics
+  initialDelaySeconds: 15
+  periodSeconds: 20
+
+serviceAccount:
+  create: true
+  name: ""
+
+ingress:
+  enabled: false
+
+httpRoute:
+  enabled: false
+
+autoscaling:
+  enabled: false

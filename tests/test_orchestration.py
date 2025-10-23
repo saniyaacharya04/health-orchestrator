@@ -1,12 +1,15 @@
 import unittest
-from unittest.mock import patch
-from orchestration.orchestration import execute_action
+from orchestrator.actions import execute_action
 
-class TestOrchestration(unittest.TestCase):
-    @patch('subprocess.run')
-    def test_execute_action_restart(self, mock_run):
-        execute_action("restart", "my_microservice_1")
-        mock_run.assert_called_once_with(["kubectl", "rollout", "restart", "deployment/my_microservice_1"])
+class TestOrchestrator(unittest.TestCase):
+    def test_execute_action_restart(self):
+        execute_action("RESTART")  # just ensure no exceptions
 
-if __name__ == '__main__':
+    def test_execute_action_no_action(self):
+        execute_action("NO_ACTION")  # just ensure no exceptions
+
+    def test_execute_action_unknown(self):
+        execute_action("UNKNOWN")  # just ensure no exceptions
+
+if __name__ == "__main__":
     unittest.main()

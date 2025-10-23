@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "helm-health-orchestrator.fullname" . }}
+spec:
+  type: {{ .Values.service.type }}
+  selector:
+    app.kubernetes.io/name: {{ include "helm-health-orchestrator.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+  ports:
+    - name: api
+      port: {{ .Values.service.ports.api }}
+      targetPort: {{ .Values.service.ports.api }}
+      nodePort: {{ .Values.service.ports.nodePortAPI }}
+    - name: metrics
+      port: {{ .Values.service.ports.metrics }}
+      targetPort: {{ .Values.service.ports.metrics }}
+      nodePort: {{ .Values.service.ports.nodePortMetrics }}
