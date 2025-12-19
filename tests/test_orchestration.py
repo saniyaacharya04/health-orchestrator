@@ -1,5 +1,5 @@
 import unittest
-from orchestrator.actions import execute_action
+from health_orchestrator.orchestrator.actions import execute_action
 
 class TestOrchestrator(unittest.TestCase):
     def test_execute_action_restart(self):

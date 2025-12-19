@@ -1,34 +1,31 @@
-# healing/decision_engine.py
 import os
 import joblib
+import numpy as np
 
-# Define the expected feature order for your model
-feature_order = ["cpu", "memory", "disk"]  # keep all features the model expects
 
-def predict_action(metrics: dict, model_path: str = "healing/model.pkl") -> str:
+def predict_action(metrics: dict, model_path: str | None = None) -> str:
     """
     Predicts the healing action based on system metrics.
 
-    Args:
-        metrics (dict): Metrics dictionary, e.g. {"cpu": 0.5, "memory": 0.3, "disk": 0.1}
-        model_path (str): Path to the saved sklearn model
-
-    Returns:
-        str: "RESTART" or "NO_ACTION"
+    Falls back to rule-based logic if ML model is unavailable.
     """
-    if not os.path.exists(model_path):
-        raise FileNotFoundError(f"Model not found at {model_path}")
 
-    # Load the trained model using joblib
-    model = joblib.load(model_path)
+    cpu = metrics.get("cpu", 0)
+    memory = metrics.get("memory", 0)
+    disk = metrics.get("disk", 0)
 
-    # Convert metrics to feature vector
-    # If a metric is missing, use 0.0 as default
-    feature_vector = [float(metrics.get(key, 0.0)) for key in feature_order]
+    # Rule-based fallback (always safe)
+    if cpu > 85 or memory > 85 or disk > 80:
+        return "RESTART"
 
-    # Predict: model should return 0 or 1
-    prediction = model.predict([feature_vector])[0]
+    # Optional ML-based path
+    if model_path and os.path.exists(model_path):
+        try:
+            model = joblib.load(model_path)
+            features = np.array([[cpu, memory, disk]])
+            prediction = model.predict(features)[0]
+            return "RESTART" if prediction == 1 else "NO_ACTION"
+        except Exception:
+            return "NO_ACTION"
 
-    # Map numeric prediction to action
-    action_map = {0: "NO_ACTION", 1: "RESTART"}
-    return action_map.get(prediction, "NO_ACTION")
+    return "NO_ACTION"

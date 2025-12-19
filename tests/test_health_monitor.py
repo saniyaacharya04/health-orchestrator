@@ -1,5 +1,5 @@
 import unittest
-from monitors.health_monitor import generate_metrics
+from health_orchestrator.monitors.health_monitor import generate_metrics
 
 class TestHealthMonitor(unittest.TestCase):
     def test_generate_metrics(self):

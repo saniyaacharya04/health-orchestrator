@@ -1,5 +1,5 @@
 import unittest
-from monitors.failure_detector import detect_failure
+from health_orchestrator.monitors.failure_detector import detect_failure
 
 class TestFailureDetector(unittest.TestCase):
     def test_detect_failure_true(self):

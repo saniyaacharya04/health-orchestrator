@@ -1,6 +1,6 @@
 # tests/test_healing_decision_engine.py
 import unittest
-from healing.decision_engine import predict_action
+from health_orchestrator.healing.decision_engine import predict_action
 
 class TestDecisionEngine(unittest.TestCase):
     
