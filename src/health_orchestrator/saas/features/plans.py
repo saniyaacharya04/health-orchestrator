@@ -1,0 +1,2 @@
+FREE = "free"
+PREMIUM = "premium"
