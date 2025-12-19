@@ -1,17 +1,8 @@
-# Python
 __pycache__/
 *.pyc
-*.pyo
-*.pyd
 .env
-.venv
-venv/
-
-# macOS
-.DS_Store
-
-# Helm
-*.tgz
-*.bak
-
-.history/
+.env.*
+.venv/
+model.pkl
+data/
+logs/
