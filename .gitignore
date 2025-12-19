@@ -1,8 +1,26 @@
+# Python
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
+
+# Environments
 .env
 .env.*
 .venv/
-model.pkl
-data/
+venv/
+
+# Logs & runtime
 logs/
+*.log
+
+# ML artifacts
+model.pkl
+models/
+data/
+
+# OS
+.DS_Store
+
+# Test cache
+.pytest_cache/
