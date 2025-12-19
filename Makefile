@@ -1,10 +1,10 @@
 .PHONY: run test lint
 
 run:
-\tpython -m health_orchestrator.main
+	python -m health_orchestrator.main
 
 test:
-\tpytest -v
+	pytest -v
 
 lint:
-\tpython -m compileall src
+	python -m compileall src
