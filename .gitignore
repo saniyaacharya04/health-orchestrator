@@ -24,3 +24,4 @@ data/
 
 # Test cache
 .pytest_cache/
+.history/
