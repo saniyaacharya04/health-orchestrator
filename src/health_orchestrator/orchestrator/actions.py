@@ -1,7 +1,12 @@
-def execute_action(action):
+from health_orchestrator.core.logging import get_logger
+
+logger = get_logger(__name__)
+
+
+def execute_action(action: str):
     if action == "RESTART":
-        print("[Orchestrator] Restarting service...")
+        logger.warning("Executing RESTART action")
     elif action == "NO_ACTION":
-        print("[Orchestrator] No action needed.")
+        logger.info("No action executed")
     else:
-        print(f"[Orchestrator] Unknown action: {action}")
+        logger.error(f"Unknown action received: {action}")
