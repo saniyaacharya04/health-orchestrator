@@ -3,18 +3,17 @@ __pycache__/
 *.pyc
 *.pyo
 *.pyd
-
-# Environments
+.pytest_cache/
 .env
 .env.*
 .venv/
 venv/
 
-# Logs & runtime
+# Logs
 logs/
 *.log
 
-# ML artifacts
+# ML / Data
 model.pkl
 models/
 data/
@@ -22,6 +21,11 @@ data/
 # OS
 .DS_Store
 
-# Test cache
-.pytest_cache/
+# Editor / History
 .history/
+.idea/
+.vscode/
+
+# Coverage
+.coverage
+htmlcov/

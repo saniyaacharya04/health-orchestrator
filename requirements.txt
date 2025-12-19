@@ -1,6 +1,4 @@
-flask
-prometheus_client
-numpy
-requests
-joblib
-scikit-learn
+flask>=2.3
+pytest>=8.0
+numpy>=1.26
+joblib>=1.3

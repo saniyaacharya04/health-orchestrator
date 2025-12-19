@@ -1,164 +1,123 @@
 # Health Orchestrator
 
-Health Orchestrator is a **production-grade backend platform** that simulates **automated system health monitoring and self-healing orchestration**, inspired by real-world **SRE and Platform Engineering systems** used in cloud-native environments.
+**Production-Style SaaS for Automated System Health Monitoring & Self-Healing**
 
-The system continuously evaluates service metrics, detects failures, decides recovery actions using **rule-based and ML-assisted logic**, and executes orchestration actions with **structured logging, automated testing, and deployment readiness**.
+Health Orchestrator is a **SaaS-ready backend system** that monitors system metrics, detects failures, enforces freemium feature access, and orchestrates automated recovery actions.
+It is designed to demonstrate **end-to-end ownership**, **backend architecture**, and **real SaaS engineering practices**.
 
-This project demonstrates **end-to-end engineering ownership**, not a tutorial or toy application.
-
----
-
-## Problem Statement
-
-Modern distributed systems require:
-
-* Continuous health monitoring
-* Fast and reliable failure detection
-* Automated recovery decisions
-* Observability and traceability
-* Safe degradation when ML components fail
-
-Manual intervention is slow, error-prone, and does not scale.
-
-Health Orchestrator addresses this problem by providing a **self-healing control plane** that mimics how real production systems detect issues and respond automatically.
+This is **not a demo project** — it is structured the way real infrastructure SaaS products are built.
 
 ---
 
-## Key Features
+## Core Capabilities
 
-### Core Features (Fully Implemented)
+### 1. System Monitoring
 
-* System metrics generation (CPU, memory, error rate)
-* Failure detection using configurable thresholds
-* Healing decision engine:
-
-  * Rule-based fallback logic
-  * Optional ML-assisted inference with safe degradation
-* Orchestration action execution
-* REST API service
+* CPU, memory, error-rate metric ingestion
 * Structured JSON logging
-* Unit testing and end-to-end validation
-* Docker, Kubernetes, and Helm readiness
+* Deterministic, testable metric generation
 
-### Intentional Design Choices
+### 2. Failure Detection
 
-* No ML model artifacts committed to Git
-* System remains functional when ML components are unavailable
-* Clear separation of concerns between monitoring, decision-making, and execution
+* Threshold-based failure detection engine
+* Configurable limits per metric
+* Clean separation between monitoring and decision logic
 
----
+### 3. Healing Decision Engine
 
-## Architecture Overview
+* Rule-based fallback (always available)
+* ML-ready decision path (premium-gated)
+* Safe default behavior when models are unavailable
 
-```
-                ┌────────────────────┐
-                │   REST API Layer   │
-                │  (/health, /orch) │
-                └─────────┬──────────┘
-                          │
-          ┌───────────────┴───────────────┐
-          │        Monitoring Layer        │
-          │  Health Monitor + Failure Det. │
-          └───────────────┬───────────────┘
-                          │
-          ┌───────────────┴───────────────┐
-          │      Decision Engine           │
-          │  Rule-based + ML-assisted      │
-          └───────────────┬───────────────┘
-                          │
-          ┌───────────────┴───────────────┐
-          │     Orchestration Actions      │
-          │   Restart / No-Action Logic   │
-          └───────────────────────────────┘
-```
+### 4. Orchestration Layer
 
-Each layer is independently testable and replaceable, closely mirroring real internal platform systems.
+* Action execution abstraction
+* Supports restart / no-action flows
+* Extendable for real infrastructure hooks
 
 ---
 
-## Project Structure
+## SaaS Architecture (Key Differentiator)
 
+### Organization & Auth
+
+* Organization bootstrap endpoint
+* API-key based authentication
+* Multi-tenant aware design
+
+### Freemium Enforcement
+
+* **Free Plan**
+
+  * Metrics ingestion
+  * Health checks
+* **Premium Plan (Locked / Placeholder)**
+
+  * Auto-orchestration
+  * ML-based healing
+  * Integrations
+  * Audit logs
+
+Requests to locked features return:
+
+```json
+{
+  "error": "Upgrade Required",
+  "feature": "auto_orchestration",
+  "current_plan": "free"
+}
 ```
-health-orchestrator/
-├── src/health_orchestrator/
-│   ├── api/            # HTTP routes
-│   ├── core/           # logging, config, errors
-│   ├── monitors/       # metrics and failure detection
-│   ├── healing/        # decision engine (rules + ML)
-│   ├── orchestrator/   # action execution
-│   └── main.py         # application entrypoint
-├── tests/              # unit tests
-├── scripts/            # end-to-end validation
-├── docker/             # containerization
-├── helm/               # Kubernetes Helm chart
-├── deployment/         # raw Kubernetes manifests
-├── Makefile
-└── requirements.txt
-```
+
+### Usage Tracking
+
+* Per-organization usage counters
+* Ready for billing integration
+
+### Billing (Stripe-Ready Stubs)
+
+* `/billing/upgrade` endpoint
+* Stripe webhook handler placeholder
+* Clean separation between billing logic and core system
 
 ---
 
-## API Endpoints
+## API Overview
 
 ### Health Check
 
-```
+```http
 GET /health
 ```
 
-Response:
+### Organization Bootstrap (Dev)
 
-```json
-{
-  "status": "ok"
-}
+```http
+POST /api/dev/bootstrap
+```
+
+Returns:
+
+* `org_id`
+* `api_key`
+* `plan`
+
+### Metric Ingestion (SaaS)
+
+```http
+POST /api/v1/metrics
+X-API-Key: <api_key>
+```
+
+### Billing
+
+```http
+POST /billing/upgrade
+POST /billing/webhook
 ```
 
 ---
 
-### Orchestration Trigger
-
-```
-POST /orchestrate
-```
-
-Response:
-
-```json
-{
-  "metrics": {
-    "cpu": 43,
-    "memory": 14,
-    "error_rate": 5
-  },
-  "failure_detected": false,
-  "action_taken": "NO_ACTION"
-}
-```
-
----
-
-## Observability
-
-* Centralized structured JSON logging
-* Log levels: INFO, WARNING, ERROR
-* Logs compatible with ELK, Loki, and CloudWatch pipelines
-* No print statements in business logic
-
-Example log:
-
-```json
-{
-  "timestamp": "2025-12-19T09:53:45.668386",
-  "level": "INFO",
-  "logger": "health_orchestrator.healing.decision_engine",
-  "message": "No action required"
-}
-```
-
----
-
-## Testing Strategy
+## End-to-End Testing
 
 ### Unit Tests
 
@@ -166,41 +125,39 @@ Example log:
 pytest -q
 ```
 
-### End-to-End Test
+### SaaS E2E Test
 
 ```bash
-bash scripts/e2e.sh
+bash scripts/saas_e2e.sh
 ```
 
-The end-to-end test performs the following:
+E2E validates:
 
-* Starts the service
-* Waits for readiness
-* Calls `/health`
-* Calls `/orchestrate`
-* Fails immediately if any step breaks
-
-This mirrors CI-level validation used in real production teams.
+* Org bootstrap
+* API key auth
+* Freemium enforcement
+* Correct HTTP status codes
+* Full service lifecycle
 
 ---
 
-## Running Locally
+## Local Development
 
 ### Environment Setup
 
 ```bash
-conda create -n health-orchestrator python=3.10 -y
+conda create -n health-orchestrator python=3.10
 conda activate health-orchestrator
 pip install -r requirements.txt
 ```
 
-### Run the Service
+### Run Service
 
 ```bash
 make run
 ```
 
-The service runs at:
+Service runs at:
 
 ```
 http://localhost:8000
@@ -208,52 +165,82 @@ http://localhost:8000
 
 ---
 
-## Failure Modes and Handling
+## CI/CD
 
-| Failure Scenario             | Handling Strategy               |
-| ---------------------------- | ------------------------------- |
-| Missing ML model             | Rule-based fallback             |
-| ML inference error           | Safe NO_ACTION                  |
-| High CPU or memory           | Trigger RESTART                 |
-| Unknown orchestration action | Logged without crashing         |
-| API misuse                   | Controlled response             |
-| Service crash                | Container or Kubernetes restart |
+GitHub Actions pipeline:
 
----
+* Dependency install
+* Unit tests
+* SaaS E2E validation
 
-## Scaling and Production Considerations
+Located at:
 
-* Replace Flask development server with Gunicorn
-* Integrate real metrics sources (Prometheus, OpenTelemetry)
-* Externalize thresholds using environment configuration
-* Persist orchestration actions for auditability
-* Enable Horizontal Pod Autoscaling via Kubernetes
-* Integrate with real orchestration backends
+```
+.github/workflows/ci.yml
+```
 
 ---
 
-## Skills Demonstrated
+## Infrastructure Readiness
 
-* Backend system design
-* SRE and platform engineering concepts
-* ML system degradation handling
-* Structured logging and observability
-* Test-driven refactoring
-* Docker and Kubernetes readiness
-* CI-style end-to-end validation
+Included but optional:
+
+* Dockerfile
+* docker-compose
+* Helm charts
+* Kubernetes manifests
+
+This allows:
+
+* Local dev
+* Containerized deployment
+* Kubernetes deployment
+
+---
+
+## Project Structure (High Level)
+
+```
+src/health_orchestrator/
+├── api/            # HTTP routes
+├── billing/        # Billing stubs
+├── core/           # Logging, config, errors
+├── healing/        # Decision engine
+├── monitors/       # Metrics + failure detection
+├── orchestrator/   # Action execution
+├── saas/           # Auth, plans, usage, RBAC
+└── main.py         # Application entrypoint
+```
+
+---
+
+## Why This Project Stands Out
+
+This project demonstrates:
+
+* Real SaaS thinking (freemium, billing, auth)
+* Clean backend architecture
+* Production-style logging
+* CI + E2E discipline
+* Infrastructure awareness
+* End-to-end ownership
+
+It is intentionally built the way **early-stage startups and platform teams** design backend systems.
+
+---
+
+## Roadmap (Optional Future Work)
+
+* Replace in-memory stores with Postgres
+* Async workers for orchestration
+* Real ML model integration
+* Stripe checkout integration
+* Rate limiting per API key
+* Web dashboard
 
 ---
 
 ## License
 
 MIT License
-
----
-
-## Final Note
-
-This project is intentionally structured to resemble a **real internal platform service**, not a tutorial.
-It is suitable for **resume shortlisting, system design interviews, and GitHub code reviews**.
-
----
 
